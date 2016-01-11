@@ -13,16 +13,22 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     var refreshControl: UIRefreshControl!
 
+    
     @IBOutlet weak var tableView: UITableView!
     
     var movies: [NSDictionary]?
     
+    var filteredData: [String]!
+    var searchController: UISearchController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.title = "Movie View"
 
         tableView.dataSource = self
         tableView.delegate = self
+        //searchMovie.dataSource = self
         
         refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "onRefresh", forControlEvents: UIControlEvents.ValueChanged)
@@ -108,6 +114,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         print("row \(indexPath.row)")
         return cell
     }
+    
+    
     /*
     // MARK: - Navigation
 
