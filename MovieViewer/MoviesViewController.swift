@@ -9,17 +9,23 @@
 import UIKit
 import AFNetworking
 
-class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
     
-    var refreshControl: UIRefreshControl!
+    //var refreshControl: UIRefreshControl!
 
     
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
+    
     var movies: [NSDictionary]?
     
-    var filteredData: [String]!
-    var searchController: UISearchController!
+    //var filteredData: [NSDictionary]!
+    let refreshControl = UIRefreshControl()
+    
+    //var filteredData: [String]!
+    //var searchController: UISearchController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,10 +35,23 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.dataSource = self
         tableView.delegate = self
         //searchMovie.dataSource = self
+        searchBar.delegate = self
         
-        refreshControl = UIRefreshControl()
+        //filteredData = movies
+        
+        //searchController = UISearchController(searchResultsController: nil)
+        //searchController.searchResultsUpdater = self
+        
+        refreshControl.backgroundColor = UIColor.blackColor()
+        refreshControl.tintColor = UIColor.whiteColor()
+        
         refreshControl.addTarget(self, action: "onRefresh", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
+        
+        // return target view
+        var targetView: UIView{
+            return self.view
+        }
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
@@ -53,6 +72,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                             self.movies = responseDictionary["results"] as! [NSDictionary]
                             
                             self.tableView.reloadData()
+                            //self.filteredData = self.movies
+                            
                             
                             //self.refreshControl.endRefreshing()
                             
@@ -74,36 +95,43 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             dispatch_get_main_queue(), closure)
     }
     
-    func onRefresh() {
-        delay(2, closure: {
-            self.refreshControl.endRefreshing()
-        })
-    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
+    func onRefresh() {
+        delay(2, closure: {
+            self.refreshControl.endRefreshing()
+        })
+    }
+    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        //if let filteredData = filteredData {
         if let movies = movies {
             return movies.count
         } else {// if nill
             return 0
         }
         //return movies.count
+        //return filteredData.count
+
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
         
         let movie = movies![indexPath.row]
+        //let movie = filteredData![indexPath.row]
         let title = movie["title"] as! String
         let overview = movie["overview"] as! String
         let posterPath = movie["poster_path"] as! String
         
         let baseUrl = "http://image.tmdb.org/t/p/w500/"
         let imageUrl = NSURL(string: baseUrl + posterPath)
+        
+        //filteredData = title
         
         cell.posterView.setImageWithURL(imageUrl!)
         
@@ -114,6 +142,43 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         print("row \(indexPath.row)")
         return cell
     }
+    
+    @IBAction func onTap(sender: AnyObject) {
+        view.endEditing(true)
+    }
+    
+    /*func onRefresh(refreshControl: UIRefreshControl) {
+        delay(2, closure: {
+            self.refreshControl.endRefreshing()
+        })
+        
+        let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
+        let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
+        let request = NSURLRequest(URL: url!)
+        
+        let session = NSURLSession(
+            configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
+            delegate:nil,
+            delegateQueue:NSOperationQueue.mainQueue()
+        )
+        
+        let task : NSURLSessionDataTask = session.dataTaskWithRequest(request,
+            completionHandler: { (data, response, error) in
+                
+                // Reload tableView
+                self.tableView.reloadData()
+                refreshControl.endRefreshing()
+        });
+        task.resume()
+    }*/
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        movies = searchText.isEmpty ? movies : movies!.filter({ (movie: NSDictionary) -> Bool in
+            return (movie["title"] as! String).rangeOfString(searchText, options: .CaseInsensitiveSearch) != nil
+        })
+        self.tableView.reloadData()
+    }
+    
     
     
     /*
