@@ -2,7 +2,7 @@
 
 Movie Viewer is a movies app using the [The Movie Database API](http://docs.themoviedb.apiary.io/#).
 
-Time spent: 3 hours spent in total
+Time spent: 6 hours spent in total
 
 ## User Stories
 
@@ -17,7 +17,7 @@ The following **optional** features are implemented:
 
 - [ ] User sees an error message when there's a networking error.
 - [ ] Movies are displayed using a CollectionView instead of a TableView.
-- [ ] User can search for a movie.
+- [X] User can search for a movie.
 - [ ] All images fade in as they are loading.
 - [ ] Customize the UI.
 
@@ -36,11 +36,14 @@ Here's a walkthrough of implemented user stories:
 
 <img src='http://i.imgur.com/d1dmzkR.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
+Search Bar
+<img src='http://i.imgur.com/7vq6KTh.jpg' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-I had spent maybe 3 hours on the required portion of the project. I had tried to implement the search bar but I had no success. My attempt with the the search bar was an extra 3 hours, which is about 6 hours total.
+I had spent maybe 3 hours on the required portion of the project. I had tried to implement the search bar but I had no success. I was able to get the movies to filter out with the search, but I was not able to refresh it after the search. My attempt with the the search bar was an extra 3 hours, which is about 6 hours total.
 
 ## License
 
