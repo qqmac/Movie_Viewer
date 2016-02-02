@@ -9,14 +9,12 @@
 import UIKit
 import AFNetworking
 
-class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     //var refreshControl: UIRefreshControl!
 
     
     @IBOutlet weak var tableView: UITableView!
-    
-    @IBOutlet weak var searchBar: UISearchBar!
     
     
     var movies: [NSDictionary]?
@@ -35,7 +33,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.dataSource = self
         tableView.delegate = self
         //searchMovie.dataSource = self
-        searchBar.delegate = self
+        //searchBar.delegate = self
         
         //filteredData = movies
         
@@ -49,9 +47,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.insertSubview(refreshControl, atIndex: 0)
         
         // return target view
-        var targetView: UIView{
-            return self.view
-        }
+        //var targetView: UIView{
+          //  return self.view
+        //}
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
@@ -69,7 +67,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                         data, options:[]) as? NSDictionary {
                             NSLog("response: \(responseDictionary)")
                             
-                            self.movies = responseDictionary["results"] as! [NSDictionary]
+                            self.movies = responseDictionary["results"] as? [NSDictionary]
                             
                             self.tableView.reloadData()
                             //self.filteredData = self.movies
@@ -143,14 +141,14 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     }
     
-    @IBAction func onTap(sender: AnyObject) {
-        view.endEditing(true)
-    }
+    //@IBAction func onTap(sender: AnyObject) {
+        //view.endEditing(true)
+    //}
     
     /*func onRefresh(refreshControl: UIRefreshControl) {
-        delay(2, closure: {
+        /*delay(2, closure: {
             self.refreshControl.endRefreshing()
-        })
+        })*/
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
@@ -163,32 +161,57 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         )
         
         let task : NSURLSessionDataTask = session.dataTaskWithRequest(request,
-            completionHandler: { (data, response, error) in
+            completionHandler: { (dataOrNil, response, error) in
+                if let data = dataOrNil {
+                    if let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(
+                        data, options:[]) as? NSDictionary {
+                            //NSLog("response: \(responseDictionary)")
+                            
+                            self.movies = responseDictionary["results"] as? [NSDictionary]
+                            
+                            self.tableView.reloadData()
+                            
+                            //self.filteredData = self.movies
+                            
+                            refreshControl.endRefreshing()
+                            //self.refreshControl.endRefreshing()
+                            
+                    }
+                }
                 
-                // Reload tableView
-                self.tableView.reloadData()
-                refreshControl.endRefreshing()
+                
         });
+        
+        
+                
         task.resume()
     }*/
     
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+    /*func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
         movies = searchText.isEmpty ? movies : movies!.filter({ (movie: NSDictionary) -> Bool in
             return (movie["title"] as! String).rangeOfString(searchText, options: .CaseInsensitiveSearch) != nil
         })
         self.tableView.reloadData()
-    }
+    }*/
     
     
     
-    /*
+    
     // MARK: - Navigation
 
+    
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let cell = sender as! UITableViewCell
+        let indexPath = tableView.indexPathForCell(cell)
+        let movie = movies![indexPath!.row]
+        
+        let detailViewController = segue.destinationViewController as! DetailViewController
+        detailViewController.movie = movie
+        
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
     }
-    */
+    
 
 }
