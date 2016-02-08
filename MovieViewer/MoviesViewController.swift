@@ -15,7 +15,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
 
     
     @IBOutlet weak var tableView: UITableView!
-    
+    var endpoint: String!
     
     var movies: [NSDictionary]?
     
@@ -52,7 +52,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         //}
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
+        let url = NSURL(string:"https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")
         let request = NSURLRequest(URL: url!)
         let session = NSURLSession(
             configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
@@ -124,14 +124,14 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         //let movie = filteredData![indexPath.row]
         let title = movie["title"] as! String
         let overview = movie["overview"] as! String
-        let posterPath = movie["poster_path"] as! String
-        
         let baseUrl = "http://image.tmdb.org/t/p/w500/"
-        let imageUrl = NSURL(string: baseUrl + posterPath)
+        if let posterPath = movie["poster_path"] as? String {
+            let imageUrl = NSURL(string: baseUrl + posterPath)
+            cell.posterView.setImageWithURL(imageUrl!)
+        }
         
-        //filteredData = title
         
-        cell.posterView.setImageWithURL(imageUrl!)
+        
         
         cell.titleLabel.text = title
         cell.overviewLabel.text = overview
